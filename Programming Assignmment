@@ -1,0 +1,196 @@
+Task 1:
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.*;
+public class MysqlConnect
+{
+public static void main(String[] args)
+{
+System.out.println("MySQL Connect");
+Connection conn = null;
+String url = "jdbc:mysql://localhost:3306/";
+String dbName = "test”;
+String driver = "com.mysql.jdbc.Driver";
+String userName = "Harshita";
+String password = "";
+try {
+Class.forName(driver).newInstance();
+conn = DriverManager.getConnection(url+dbName, userName,
+password);
+System.out.println("Connected to the database");
+conn.close();
+System.out.println("Disconnected from database");
+}
+catch (Exception e)
+{
+e.printStackTrace();
+}
+try {
+Statement stmt = conn.createStatement();
+String query = "SELECT S.snum, S.sname FROM Student S , Enrolled E
+WHERE S.snum = E.snum AND E.cname = ‘CSCI 4707’ ;";
+ResultSet rs = stmt.executeQuery(query);
+while (rs.next())
+{
+String snum = rs.getObject(1).toString();
+String sname = rs.getObject(2).toString();
+System.out.println("Student Number is: " + snum + " and his/her name is
+" + sname);
+}
+}
+catch (SQLException e)
+{
+e.printStackTrace();
+for(Throwable ex : e)
+{
+System.err.println("Error occurred " + ex);
+}
+System.out.println("Error in fetching data");
+}
+try {
+Statement stmtstu = conn.createStatement();
+String querystu = "SELECT COUNT(S.snum) as stusum, E.cname FROM
+Student S, Enrolled E WHERE S.snum=E.snum GROUP BY E.cname;";
+ResultSet rsstu = stmtstu.executeQuery(querystu);
+while (rsstu.next())
+{
+String stusum = rsstu.getObject(1).toString();
+String cname = rsstu.getObject(2).toString();
+System.out.println("Student Sum is: " + stusum + " and his/her class is "
++ cname);
+}
+} catch (SQLException e)
+{
+e.printStackTrace();
+for(Throwable ex : e)
+{
+System.err.println("Error occurred " + ex);
+}
+System.out.println("Error in fetching data");
+}
+}
+}
+OUTPUT FROM ECLIPSE:
+MySQL Connect
+Connected to the database
+Student Number is: 1 and his/her name is Nathen
+Student Number is: 3 and his/her name is Victor
+Student Number is: 5 and his/her name is Kevin Ray
+Student Number is: 6 and his/her name is Kyle
+Student Number is: 7 and his/her name is Stefan
+Student Number is: 8 and his/her name is Riley
+Student Number is: 12 and his/her name is Deukyeol
+Student Number is: 15 and his/her name is Joseph
+Student Number is: 16 and his/her name is Paul
+Student Number is: 17 and his/her name is Brent
+Student Number is: 20 and his/her name is David
+Student Number is: 21 and his/her name is Neha
+Student Number is: 22 and his/her name is Heesun
+Student Number is: 24 and his/her name is Albert
+Student Number is: 25 and his/her name is Jack
+Student Number is: 26 and his/her name is Colton
+Student Number is: 28 and his/her name is Thomas
+Student Number is: 30 and his/her name is Sam
+Student Number is: 31 and his/her name is David
+Student Number is: 35 and his/her name is Christopher
+Student Number is: 41 and his/her name is Chunxi
+Student Number is: 45 and his/her name is Dale
+Student Number is: 48 and his/her name is Will
+Student Number is: 50 and his/her name is Minh
+Student Number is: 51 and his/her name is Jacob
+Student Number is: 53 and his/her name is Shraddha
+Student Number is: 56 and his/her name is Ashok
+Student Number is: 57 and his/her name is Thomas
+Student Number is: 65 and his/her name is Michael
+Student Number is: 67 and his/her name is Efe
+Student Number is: 68 and his/her name is Patrick
+Student Number is: 70 and his/her name is Harshita
+Student Number is: 73 and his/her name is Qikai
+Student Number is: 75 and his/her name is Alec
+Student Number is: 77 and his/her name is Shakil
+Student Number is: 78 and his/her name is Jeremiah
+Student Number is: 81 and his/her name is Pamela-Rose
+Student Number is: 86 and his/her name is Samuel
+Student Number is: 87 and his/her name is Kyle
+Student Number is: 92 and his/her name is Muhan
+Student Number is: 93 and his/her name is Yameng
+Student Number is: 94 and his/her name is Zhen
+Student Snum is: 42 and his/her class is CSCI 4707
+Student Snum is: 49 and his/her class is CSCI 5523
+Student Snum is: 41 and his/her class is CSCI 5707
+Student Snum is: 36 and his/her class is CSCI 8715
+Disconnected from database
+
+
+
+Task 2:
+(1) Trigger Code:
+mysql> CREATE TRIGGER stunum_trigger BEFORE UPDATE ON Student
+-> FOR EACH ROW
+-> BEGIN
+-> IF (NEW.snum <> OLD.snum) THEN
+-> SET new.age = old.age+1;
+-> END IF
+-> END;
+Query OK, 0 rows affected (0.06 sec)
+mysql> select * from Student;
++------+-------------+-------+--------+------+
+| snum | sname | major | level | age |
++------+-------------+-------+--------+------+
+| 1111 | Patrick | Math |null| 17 |
+1 rows in set (0.00 sec)
+(2) Programming Code:
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.*;
+public class MysqlConnect
+{
+public static void main(String[] args)
+{
+System.out.println("MySQL Connect");
+Connection conn = null;
+String url = "jdbc:mysql://localhost:3306/";
+String dbName = "test";
+String driver = "com.mysql.jdbc.Driver";
+String userName = " Harshita";
+String password = "";
+try {
+Class.forName(driver).newInstance();
+conn = DriverManager.getConnection(url+dbName, userName,
+password);
+System.out.println("Connected to the database");
+conn.close();
+System.out.println("Disconnected from database");
+} catch (Exception e)
+{
+e.printStackTrace();
+}
+try {
+Statement stmt = conn.createStatement();
+String query = "UPDATE Student set snum=1111 where
+sname=”Patrick”;";
+int deletedRows = stmt.executeUpdate(query);
+System.out.println(sRows + " Student’s new snum is:" + snum + “and
+his/her age is updated to” + age);
+}
+catch (SQLException e)
+{
+e.printStackTrace();
+for(Throwable ex : e)
+{
+System.err.println("Error occurred " + ex);
+}
+System.out.println("Error in fetching data");
+}
+}
+}
+MySQL Connect
+Connected to the database
+Student’s new snum is 1111 and his/her age is updated
+to 17
+Disconnected from database
